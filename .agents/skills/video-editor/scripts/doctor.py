@@ -85,7 +85,7 @@ def install_missing(os_name: str, missing_ffmpeg: bool, missing_py: list[str]) -
     if missing_py:
         print(f"INSTALLING python packages: {', '.join(missing_py)}")
         try:
-            security.run_safe([sys.executable, "-m", "pip", "install", *missing_py], timeout=600)
+            security.run_safe([sys.executable, "-m", "pip", "install", "--upgrade", *missing_py], timeout=600)
             print("STATUS python packages installed OK")
         except Exception as exc:
             print(f"ERROR installing python packages: {exc}", file=sys.stderr)

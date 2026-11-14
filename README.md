@@ -1,26 +1,79 @@
-# Vidiola — Guia de Uso & Melhores Práticas
+# Vidiola — Edição de Vídeo Local Segura (Antigravity & Claude Code)
 
-**Vidiola** é uma skill local-first e endurecida em segurança para o **Antigravity**, projetada para transformar vídeos brutos em Reels, Shorts, TikToks (`9:16`) ou vídeos de YouTube (`16:9`) diretamente na sua máquina — sem enviar seus vídeos para a nuvem e sem tocar nos arquivos originais.
+**Vidiola** é uma skill local-first e endurecida em segurança para **Antigravity** e **Claude Code**, projetada para transformar vídeos brutos em Reels, Shorts, TikToks (`9:16`) ou vídeos de YouTube (`16:9`) diretamente na sua máquina — sem enviar seus vídeos para a nuvem e sem tocar nos arquivos originais.
 
 ---
 
-## 1. Como Começar (em qualquer pasta)
+## 1. Instalação (Antigravity ou Claude Code)
 
-Para usar em qualquer projeto ou pasta do Antigravity ou Claud, basta mencionar **`vidiola`** ou **`/vidiola`** no chat e informar onde estão seus vídeos:
+### No Antigravity
+**Global (usar em qualquer pasta dizendo `vidiola`):**
+- **Windows (PowerShell):**
+  ```powershell
+  git clone https://github.com/nyshimura/vidiola.git "$env:TEMP\vidiola-repo"
+  New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.gemini\config\skills\vidiola" | Out-Null
+  Copy-Item -Recurse -Force "$env:TEMP\vidiola-repo\.agents\skills\video-editor\*" "$env:USERPROFILE\.gemini\config\skills\vidiola\"
+  Remove-Item -Recurse -Force "$env:TEMP\vidiola-repo"
+  ```
+- **macOS / Linux:**
+  ```bash
+  git clone https://github.com/nyshimura/vidiola.git /tmp/vidiola-repo
+  mkdir -p ~/.gemini/config/skills/vidiola
+  cp -R /tmp/vidiola-repo/.agents/skills/video-editor/* ~/.gemini/config/skills/vidiola/
+  rm -rf /tmp/vidiola-repo
+  ```
+
+### No Claude Code
+**Global (usar com `/vidiola` em qualquer projeto):**
+- **Windows (PowerShell):**
+  ```powershell
+  git clone https://github.com/nyshimura/vidiola.git "$env:TEMP\vidiola-repo"
+  New-Item -ItemType Directory -Force -Path "$env:USERPROFILE\.claude\skills\vidiola" | Out-Null
+  Copy-Item -Recurse -Force "$env:TEMP\vidiola-repo\.agents\skills\video-editor\*" "$env:USERPROFILE\.claude\skills\vidiola\"
+  Remove-Item -Recurse -Force "$env:TEMP\vidiola-repo"
+  ```
+- **macOS / Linux:**
+  ```bash
+  git clone https://github.com/nyshimura/vidiola.git /tmp/vidiola-repo
+  mkdir -p ~/.claude/skills/vidiola
+  cp -R /tmp/vidiola-repo/.agents/skills/video-editor/* ~/.claude/skills/vidiola/
+  rm -rf /tmp/vidiola-repo
+  ```
+
+*(Ou, para usar apenas em um projeto específico, copie a pasta `.agents/skills/video-editor` para `.agents/skills/vidiola` ou `.claude/skills/vidiola` dentro do projeto.)*
+
+---
+
+## 2. Dependências Automáticas (Pré-voo)
+
+Assim que você baixar a skill e disser **`vidiola`** (ou **`/vidiola`**) pela primeira vez, o **Passo 0 (`doctor.py`)** roda automaticamente antes de qualquer edição:
+1. Verifica `ffmpeg`, `ffprobe`, `faster-whisper==1.2.1`, `av>=11,<19` (com teste real de decodificação de áudio) e `pillow`.
+2. Se faltar qualquer biblioteca ou houver versão incompatível (ex.: `PyAV 19+`), a skill **pede sua permissão** e instala/atualiza tudo automaticamente com:
+   ```powershell
+   python "<caminho_da_skill>/scripts/doctor.py" --install --yes
+   ```
+3. *(Opcional)* Se quiser usar também o efeito de **texto atrás da cabeça (`bold`)**, instale:
+   ```powershell
+   pip install rembg onnxruntime
+   ```
+
+---
+
+## 3. Como Usar (em qualquer pasta)
+
+Basta mencionar **`vidiola`** ou **`/vidiola`** no chat e informar onde estão seus vídeos brutos:
 
 > *"vidiola, edite os vídeos que estão em `D:\Gravacoes\Aula01` para Reels."*
 
 ### O que acontece automaticamente
-1. **Diagnóstico (`doctor.py`)**: verifica `ffmpeg`, `ffprobe`, `faster-whisper` e `pillow`. Se algo faltar em outro computador, a skill lista o que precisa e **pede sua permissão** antes de instalar.
+1. **Pré-voo (`doctor.py`)**: garante que todas as bibliotecas estão instaladas e compatíveis (`READY`).
 2. **Estilo (`my-style.md`)**: na primeira vez, faz perguntas rápidas (formato, estilo de legenda, ritmo e áudio) e salva suas preferências.
 3. **Pasta de Resultados (`vidiola-edits/`)**: cria automaticamente a subpasta `vidiola-edits/` dentro da sua pasta de vídeos (ou em outro local que você escolher), mantendo os **arquivos originais 100% intactos**.
 4. **Rascunho & QA**: gera `<slug>-v1.mp4`, valida resolução/áudio/frames com `qa_check.py` e apresenta o resumo dos cortes.
 
 ---
 
-## 2. Melhores Práticas ao Gravar
-
-Seguir estes hábitos simples melhora drasticamente o resultado automático da Vidiola:
+## 4. Melhores Práticas ao Gravar
 
 - **Grave em 4K quando possível**: permite aplicar *punch-in* (zoom de `1.3x–1.8x` entre cortes do mesmo ângulo) mantendo nitidez total em `1080p`.
 - **Errou? Repita a frase inteira**: a skill seleciona automaticamente o **último take completo e limpo**, cortando tentativas anteriores, pausas longas e silêncios.
@@ -30,14 +83,14 @@ Seguir estes hábitos simples melhora drasticamente o resultado automático da V
 
 ---
 
-## 3. Melhores Práticas no Chat (Prompts Eficientes)
+## 5. Melhores Práticas no Chat (Prompts Eficientes)
 
 ### Primeira edição
-- *"vidiola, corta os vídeos de `C:\Users\nyshi\Videos\ProjetoX` em formato 9:16 com look bold e legendas."*
+- *"vidiola, corta os vídeos de `C:\Users\seu_usuario\Videos\ProjetoX` em formato 9:16 com look bold e legendas."*
 - *"vidiola, pega só o arquivo `D:\Clips\take_final.mp4` e salva o resultado em `D:\Editados`."*
 
 ### Pedindo ajustes (gera `-v2`, `-v3`...)
-Fale em linguagem natural, sem precisar saber termos técnicos:
+Fale em linguagem natural:
 - *"Deixa o ritmo mais apertado, sem respiros."*
 - *"Tira o trecho em que eu falo sobre X e volta a frase anterior."*
 - *"Faz uma versão horizontal 16:9 para o YouTube."* *(A skill recompõe o enquadramento e as legendas para 1920×1080, não apenas recorta).*
@@ -48,7 +101,7 @@ Sempre que você disser algo como *"sempre corte respiros"*, *"nunca use legenda
 
 ---
 
-## 4. Looks & Safe Zones
+## 6. Looks & Safe Zones
 
 | Look | Visual & Indicação |
 | :--- | :--- |
@@ -64,9 +117,8 @@ Sempre que você disser algo como *"sempre corte respiros"*, *"nunca use legenda
 
 ---
 
-## 5. Segurança & Privacidade Local
+## 7. Segurança & Privacidade Local
 
-A Vidiola foi construída para uso local seguro:
 - **100% Offline por padrão**: transcrição via `faster-whisper` local e SFX sintetizados localmente via FFmpeg (`sfx_synth.py`) — nenhum vídeo ou áudio é enviado para servidores externos.
 - **Originais intocados**: a pasta de origem é tratada como **somente leitura**.
 - **Confinamento de caminhos (`security.py`)**: bloqueia *path traversal* (`../`) e impede leitura/escrita em diretórios de sistema (`Windows`, `Program Files`, `/usr`, `/etc`, etc.).
@@ -75,11 +127,10 @@ A Vidiola foi construída para uso local seguro:
 
 ---
 
-## 6. Referências & Créditos
+## 8. Referências & Créditos
 
 A arquitetura e metodologia da Vidiola consolidam aprendizados de:
 - [`tenfoldmarc/video-edit-skill`](https://github.com/tenfoldmarc/video-edit-skill) — pipeline 9:16, seleção de takes, *safe zones* e QA por frames.
 - [`riecodes/free247editor`](https://github.com/riecodes/free247editor) — onboarding de estilo (`my-style.md`), aprendizado contínuo (`my-rules.md`) e versionamento simples.
 - [`appariciojunior/video-editor-skills`](https://github.com/appariciojunior/video-editor-skills) — edição modular por índice de palavra, *vlog pacing*, B-roll e tratamento de áudio *(CC BY-NC 4.0 — uso pessoal/não-comercial)*.
 - [`zhuyansen/awesome-claude-video-skills`](https://github.com/zhuyansen/awesome-claude-video-skills) — critérios objetivos de QA e diretrizes de segurança para skills de vídeo.
-
