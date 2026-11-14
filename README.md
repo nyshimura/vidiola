@@ -6,7 +6,7 @@
 
 ## 1. Como Começar (em qualquer pasta)
 
-A skill já está instalada globalmente (`~/.gemini/config/skills/vidiola`). Para usar em qualquer projeto ou pasta do Antigravity, basta mencionar **`vidiola`** ou **`/vidiola`** no chat e informar onde estão seus vídeos:
+Para usar em qualquer projeto ou pasta do Antigravity ou Claud, basta mencionar **`vidiola`** ou **`/vidiola`** no chat e informar onde estão seus vídeos:
 
 > *"vidiola, edite os vídeos que estão em `D:\Gravacoes\Aula01` para Reels."*
 
