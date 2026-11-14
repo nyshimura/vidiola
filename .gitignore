@@ -1,0 +1,23 @@
+# Raw & rendered media (never commit user footage or outputs)
+inbox/
+outbox/
+projects/
+my-sounds/
+
+# Personal preferences & secrets
+.env
+keys.env
+my-style.md
+my-rules.md
+config.json
+.platform.json
+
+# Local environments & caches
+.venv/
+venv/
+node_modules/
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+
